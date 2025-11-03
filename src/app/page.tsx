@@ -1,3 +1,7 @@
+import { Typography } from "@mui/joy";
+
 export default function Home() {
-  return <></>;
+  return (
+    <Typography level="h1">Main Content</Typography>
+  );
 }
