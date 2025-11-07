@@ -1177,7 +1177,7 @@ export default function Home() {
                     "opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s",
                 }}
               >
-                Функції, що допомагають викладачам і учням зростати разом”
+                Функції, що допомагають викладачам і учням зростати разом
               </Typography>
             </Box>
             <Tabs
