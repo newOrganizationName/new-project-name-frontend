@@ -227,14 +227,20 @@ const PAGE_BACKGROUND_SX = {
 const SECTION_WRAPPER_SX = {
   position: "relative" as const,
   zIndex: 1,
-  px: { xs: 2, md: 0 },
-  py: { xs: 4, md: 6 },
+  px: { xs: 1.25, sm: 1.75, md: 0 },
+  py: { xs: 3.25, sm: 4.25, md: 6 },
 };
 
 const SECTION_SURFACE_SX = {
   ...SECTION_CONTAINER_SX,
-  px: { xs: 3, md: 4 },
-  py: { xs: 3.5, md: 4.5 },
+  px: { xs: 1.75, sm: 2.5, md: 4 },
+  py: { xs: 2.5, sm: 3.25, md: 4.5 },
+};
+
+const CARD_GRID_TEMPLATE = {
+  xs: "repeat(auto-fit, minmax(260px, 1fr))",
+  md: "repeat(2, minmax(0, 1fr))",
+  lg: "repeat(4, minmax(0, 1fr))",
 };
 
 const TAB_PANEL_ANIMATION_SX = {
@@ -876,7 +882,12 @@ export default function Home() {
             sx={{
               ...SECTION_SURFACE_SX,
               display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+            gridTemplateColumns: {
+              xs: "repeat(auto-fit, minmax(260px, 1fr))",
+              md: "repeat(3, minmax(0, 1fr))",
+            },
+            justifyContent: "center",
+            alignItems: "stretch",
               gap: { xs: 3, md: 4 },
             }}
           >
@@ -970,8 +981,10 @@ export default function Home() {
                   p: 0.5,
                   borderRadius: "12px",
                   background: "background.surface",
-                  maxWidth: "fit-content",
+                  width: { xs: "100%", md: "auto" },
+                  maxWidth: { xs: "420px", sm: "520px", md: "fit-content" },
                   mx: "auto",
+                  display: "flex",
                   border: "none !important",
                   transition: "none !important",
                   "&:focus-visible": {
@@ -991,6 +1004,10 @@ export default function Home() {
                     minHeight: "auto",
                     borderRadius: "8px",
                     color: "text.secondary",
+                    minWidth: { xs: "50%", sm: "auto" },
+                    flexGrow: { xs: 1, sm: 0 },
+                    justifyContent: "center",
+                    textAlign: "center",
                     transition: "background-color 0.2s ease, color 0.2s ease",
                     "&::after": {
                       display: "none !important",
@@ -1030,11 +1047,8 @@ export default function Home() {
                     py: { xs: 3, md: 4 },
                     background: "transparent",
                     display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      md: "repeat(2, 1fr)",
-                      lg: "repeat(4, 1fr)",
-                    },
+                    gridTemplateColumns: CARD_GRID_TEMPLATE,
+                    justifyContent: "center",
                     gap: { xs: 3, md: 4 },
                   }}
                 >
@@ -1083,11 +1097,8 @@ export default function Home() {
                     py: { xs: 3, md: 4 },
                     background: "transparent",
                     display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      md: "repeat(2, 1fr)",
-                      lg: "repeat(4, 1fr)",
-                    },
+                    gridTemplateColumns: CARD_GRID_TEMPLATE,
+                    justifyContent: "center",
                     gap: { xs: 3, md: 4 },
                   }}
                 >
@@ -1184,8 +1195,10 @@ export default function Home() {
                   p: 0.5,
                   borderRadius: "12px",
                   background: "background.surface",
-                  maxWidth: "fit-content",
+                  width: { xs: "100%", md: "auto" },
+                  maxWidth: { xs: "420px", sm: "520px", md: "fit-content" },
                   mx: "auto",
+                  display: "flex",
                   border: "none !important",
                   transition: "none !important",
                   "&:focus-visible": {
@@ -1206,6 +1219,10 @@ export default function Home() {
                     borderRadius: "8px",
                     color: "text.secondary",
                     cursor: "pointer",
+                    minWidth: { xs: "50%", sm: "auto" },
+                    flexGrow: { xs: 1, sm: 0 },
+                    justifyContent: "center",
+                    textAlign: "center",
                     transition: "background-color 0.2s ease, color 0.2s ease",
                     "&::after": {
                       display: "none !important",
@@ -1245,11 +1262,8 @@ export default function Home() {
                     py: { xs: 3, md: 4 },
                     background: "transparent",
                     display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      md: "repeat(2, 1fr)",
-                      lg: "repeat(4, 1fr)",
-                    },
+                    gridTemplateColumns: CARD_GRID_TEMPLATE,
+                    justifyContent: "center",
                     gap: { xs: 3, md: 4 },
                   }}
                 >
@@ -1301,11 +1315,8 @@ export default function Home() {
                     py: { xs: 3, md: 4 },
                     background: "transparent",
                     display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      md: "repeat(2, 1fr)",
-                      lg: "repeat(4, 1fr)",
-                    },
+                    gridTemplateColumns: CARD_GRID_TEMPLATE,
+                    justifyContent: "center",
                     gap: { xs: 3, md: 4 },
                   }}
                 >
@@ -1401,6 +1412,9 @@ export default function Home() {
                       boxShadow: "0 22px 46px rgba(102, 126, 234, 0.18)",
                     },
                   },
+                  width: "100%",
+                  maxWidth: { xs: "100%", sm: "680px", md: "820px" },
+                  mx: "auto",
                 }}
               >
                 {faq.map((item, index) => (
@@ -1409,8 +1423,8 @@ export default function Home() {
                       sx={{
                         fontSize: "1.0625rem",
                         fontWeight: 600,
-                        py: { xs: 1.5, md: 1.75 },
-                        px: { xs: 2.5, md: 3 },
+                        py: { xs: 1.75, md: 1.85 },
+                        px: { xs: 3, md: 3.25 },
                         minHeight: "auto",
                         color: "text.primary",
                         letterSpacing: "-0.01em",

@@ -9,7 +9,6 @@ import {
   Link as JoyLink,
   Sheet,
   Stack,
-  SvgIcon,
 } from "@mui/joy";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -27,18 +26,6 @@ const navItems = [
   { label: "FAQ", href: "#faq", hash: "#faq" },
   { label: "Контакти", href: "#contact", hash: "#contact" },
 ];
-
-const CloseIcon = (props: React.ComponentProps<typeof SvgIcon>) => (
-  <SvgIcon viewBox="0 0 24 24" {...props}>
-    <path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z" />
-  </SvgIcon>
-);
-
-const WavesIcon = (props: React.ComponentProps<typeof SvgIcon>) => (
-  <SvgIcon viewBox="0 0 24 24" {...props}>
-    <path d="M2.5 7.6c2.1-1.6 4.2-1.6 6.3 0s4.2 1.6 6.3 0 4.2-1.6 6.3 0L21 6c-2.4-1.8-4.9-1.8-7.3 0s-4.9 1.8-7.3 0-4.9-1.8-7.3 0l1.4 1.6zm0 4.8c2.1-1.6 4.2-1.6 6.3 0s4.2 1.6 6.3 0 4.2-1.6 6.3 0L21 11c-2.4-1.8-4.9-1.8-7.3 0s-4.9 1.8-7.3 0-4.9-1.8-7.3 0l1.4 1.6zm0 4.8c2.1-1.6 4.2-1.6 6.3 0s4.2 1.6 6.3 0 4.2-1.6 6.3 0L21 15.8c-2.4-1.8-4.9-1.8-7.3 0s-4.9 1.8-7.3 0-4.9-1.8-7.3 0l1.4 1.4z" />
-  </SvgIcon>
-);
 
 const HOVER_MEDIA_QUERY = "@media (hover: hover) and (pointer: fine)";
 
@@ -154,6 +141,29 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    const body = document.body;
+    const previousOverflow = body.style.overflow;
+    const previousPaddingRight = body.style.paddingRight;
+
+    if (drawerOpen) {
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      body.style.overflow = "hidden";
+      if (scrollBarWidth > 0) {
+        body.style.paddingRight = `${scrollBarWidth}px`;
+      }
+    }
+
+    return () => {
+      body.style.overflow = previousOverflow;
+      body.style.paddingRight = previousPaddingRight;
+    };
+  }, [drawerOpen]);
 
   useEffect(() => {
     const setHash = () => {
