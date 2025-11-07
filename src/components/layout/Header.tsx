@@ -148,20 +148,42 @@ export default function Header() {
     }
 
     const body = document.body;
-    const previousOverflow = body.style.overflow;
+    const html = document.documentElement;
+    const previousBodyOverflow = body.style.overflow;
+    const previousHtmlOverflow = html.style.overflow;
     const previousPaddingRight = body.style.paddingRight;
+    const previousTouchAction = body.style.touchAction;
 
     if (drawerOpen) {
-      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      const scrollBarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
       body.style.overflow = "hidden";
+      html.style.overflow = "hidden";
+      body.style.touchAction = "none";
       if (scrollBarWidth > 0) {
         body.style.paddingRight = `${scrollBarWidth}px`;
       }
+    } else {
+      body.style.overflow = previousBodyOverflow;
+      html.style.overflow = previousHtmlOverflow;
+      body.style.paddingRight = previousPaddingRight;
+      body.style.touchAction = previousTouchAction;
     }
 
-    return () => {
-      body.style.overflow = previousOverflow;
+    const cleanup = () => {
+      body.style.overflow = previousBodyOverflow;
+      html.style.overflow = previousHtmlOverflow;
       body.style.paddingRight = previousPaddingRight;
+      body.style.touchAction = previousTouchAction;
+    };
+
+    window.visualViewport?.addEventListener("resize", cleanup, {
+      passive: true,
+    });
+
+    return () => {
+      cleanup();
+      window.visualViewport?.removeEventListener("resize", cleanup);
     };
   }, [drawerOpen]);
 
