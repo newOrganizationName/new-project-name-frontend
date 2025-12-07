@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import {
   Alert,
@@ -22,7 +21,6 @@ interface SignUpFormData {
 }
 
 export function SignUpForm() {
-  const router = useRouter();
   const { mutate: signup, isPending } = useSignup();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -43,9 +41,6 @@ export function SignUpForm() {
     signup(
       { email: data.email, password: data.password },
       {
-        onSuccess: () => {
-          router.push('/');
-        },
         onError: (error: Error) => {
           setServerError(error.message || 'Помилка при реєстрації');
         },

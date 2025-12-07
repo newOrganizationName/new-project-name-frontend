@@ -1,3 +1,11 @@
+/**
+ * Frontend validation rules for authentication.
+ *
+ * IMPORTANT: These validation rules MUST be kept in sync with the backend validation
+ * (/src/auth/dto/).
+ * Any changes here should be reflected on the backend and vice versa.
+ */
+
 // Password validation constants (must match backend)
 export const MIN_PASSWORD_LENGTH = 8;
 export const MAX_PASSWORD_LENGTH = 64;

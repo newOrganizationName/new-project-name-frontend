@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import {
   Alert,
@@ -21,7 +20,6 @@ interface LoginFormData {
 }
 
 export function LoginForm() {
-  const router = useRouter();
   const { mutate: login, isPending } = useLogin();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -39,9 +37,6 @@ export function LoginForm() {
     login(
       { email: data.email, password: data.password },
       {
-        onSuccess: () => {
-          router.push('/');
-        },
         onError: (error: Error) => {
           setServerError(error.message || 'Невірний email або пароль');
         },

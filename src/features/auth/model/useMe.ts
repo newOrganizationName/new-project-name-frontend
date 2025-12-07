@@ -20,19 +20,15 @@ export function useMe() {
   });
 
   useEffect(() => {
-    if (query.isLoading || query.isFetching) {
-      return;
-    }
-
     if (query.data) {
       setUser(query.data);
-    } else if (query.isSuccess || query.isError) {
+    } else if (query.isSuccess && !query.data) {
       setUser(null);
-      if (query.isError) {
-        tokenStorage.removeAccessToken();
-      }
+    } else if (query.isError) {
+      setUser(null);
+      tokenStorage.removeAccessToken();
     }
-  }, [query.data, query.isSuccess, query.isError, query.isLoading, query.isFetching, setUser]);
+  }, [query.data, query.isSuccess, query.isError, setUser]);
 
   useEffect(() => {
     const hasToken = !!tokenStorage.getAccessToken();
