@@ -1,5 +1,5 @@
 import { Box, Typography, Grid } from "@mui/joy";
-import { TeacherCard } from "./TeacherCard";
+import TeacherCard from "./TeacherCard";
 
 interface Teacher {
   id: string;

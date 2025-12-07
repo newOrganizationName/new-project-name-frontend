@@ -1,4 +1,1 @@
-export { makeStore, type AppStore, type RootState, type AppDispatch } from './store';
-export { default as StoreProvider } from './StoreProvider';
-export { SUBJECTS, TEACHERS } from './constants';
-
+export { SUBJECTS, TEACHERS } from "./constants";

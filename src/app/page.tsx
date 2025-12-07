@@ -19,7 +19,7 @@ import {
   Chip,
 } from "@mui/joy";
 import { useEffect, useState, useMemo } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/shared/lib/supabase";
 
 const features = [
   {

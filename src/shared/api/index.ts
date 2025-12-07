@@ -1,2 +1,1 @@
-export { baseApi } from './baseApi';
-
+export { api, apiClient } from "./client";

@@ -4,7 +4,7 @@ import { CssVarsProvider } from "@mui/joy/styles";
 import { Box, CssBaseline } from "@mui/joy";
 import { Header } from "@/widgets/header";
 import { Footer } from "@/widgets/footer";
-import StoreProvider from "@/shared/config/StoreProvider";
+import { QueryProvider } from "@/shared/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -69,7 +69,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable}`}
         suppressHydrationWarning
       >
-        <StoreProvider>
+        <QueryProvider>
           <CssVarsProvider>
             <CssBaseline />
             <Box
@@ -95,7 +95,7 @@ export default function RootLayout({
               <Footer />
             </Box>
           </CssVarsProvider>
-        </StoreProvider>
+        </QueryProvider>
       </body>
     </html>
   );
