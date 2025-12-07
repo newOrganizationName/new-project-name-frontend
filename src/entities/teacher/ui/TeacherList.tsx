@@ -1,19 +1,21 @@
 import { Box, Typography, Grid } from "@mui/joy";
-import TeacherCard from "./TeacherCard";
+import { TeacherCard } from "./TeacherCard";
+
+interface Teacher {
+  id: string;
+  name: string;
+  subject: {
+    path: string;
+    name: string;
+  };
+}
 
 interface Props {
   title: string;
-  items: {
-    id: string;
-    name: string;
-    subject: {
-      path: string;
-      name: string;
-    };
-  }[];
+  items: Teacher[];
 }
 
-export default function List({ title, items }: Props) {
+export default function TeacherList({ title, items }: Props) {
   return (
     <Box>
       <Typography level="h2" sx={{ mb: 3 }}>

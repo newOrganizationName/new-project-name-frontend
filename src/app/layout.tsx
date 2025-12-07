@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CssVarsProvider } from "@mui/joy/styles";
 import { Box, CssBaseline } from "@mui/joy";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
 import StoreProvider from "@/shared/config/StoreProvider";
 
 const geistSans = Geist({
