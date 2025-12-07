@@ -1,6 +1,6 @@
 import { Box, Typography, Grid } from "@mui/joy";
-import TeacherCard from "@/components/common/TeacherCard";
-import { SUBJECTS, TEACHERS } from "@/constants";
+import { TeacherCard } from "@/entities/teacher";
+import { SUBJECTS, TEACHERS } from "@/shared/config";
 
 interface Props {
   params: Promise<{

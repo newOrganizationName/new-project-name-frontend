@@ -1,299 +1,241 @@
 # new-project-name-frontend
 
-## Project Architecture
+## 🧱 Project Architecture
 
-The project uses **Feature-Sliced Design (FSD)**
+This project uses a modern, production-ready architecture based on:
 
-### Folder Structure
+- **Next.js App Router (15.x)**
+- **Feature-Sliced Design (FSD) — lightweight adaptation**
+- **React Query** for server state management
+- **Zustand** for client/global UI and auth state
+- **MUI Joy** as the component/UI framework
+- **Supabase client (optional)** for future integrations
+
+Architecture is intentionally designed so it can evolve into a large-scale project without rewrites.
+
+---
+
+## 📁 Folder Structure
 
 ```
 src/
-├── app/                    # App Router (Next.js)
-│   ├── pages/             # Additional pages
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page
+├── app/                     # Next.js App Router pages & layouts
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── login/
+│   │   └── page.tsx
+│   ├── sign-up/
+│   │   └── page.tsx
+│   └── subjects/[subject]/
+│       └── page.tsx
 │
-├── shared/                # Shared modules (lowest layer)
-│   ├── api/              # RTK Query API endpoints
-│   ├── config/           # Configuration (store, providers)
-│   ├── lib/              # Utilities and helpers
-│   ├── types/            # Common TypeScript types
-│   └── ui/               # Common UI components (Button, Input)
+├── shared/                  # Lowest-level reusable code
+│   ├── api/                 # Fetch wrapper (apiClient)
+│   ├── config/              # Constants, environment config
+│   ├── lib/                 # Utilities (tokenStorage, error helpers)
+│   ├── providers/           # QueryProvider, ThemeRegistry, AuthInitializer
+│   ├── store/               # Zustand stores (auth, UI)
+│   ├── types/               # Global TS types
+│   └── ui/                  # Shared UI primitives (Toaster, etc.)
 │
-├── entities/             # Business entities
-│   └── user/            # Example: User entity
-│       ├── model/       # Types, interfaces
-│       ├── api/         # API endpoints for User
-│       └── ui/          # UserCard, UserAvatar
+├── entities/                # Business-level entities
+│   ├── teacher/             # Example domain entity
+│   │   ├── ui/              # TeacherCard, TeacherList
+│   │   └── index.ts
+│   └── user/
+│       └── model/           # User types
 │
-├── features/            # Features
-│   └── auth/            # Example: Authentication
-│       ├── model/       # Redux slice, types
-│       ├── api/         # API endpoints for auth
-│       └── ui/          # LoginForm, RegisterForm
+├── features/                # Functional modules (auth, search, etc.)
+│   └── auth/
+│       ├── api/             # loginAction, signupAction, logoutAction, meQuery
+│       ├── lib/             # validation helpers
+│       ├── model/           # React Query hooks (useLogin, useSignup, useLogout, useMe)
+│       └── ui/              # LoginForm, SignUpForm, ProtectedRoute, layouts
 │
-└── widgets/             # Complex UI components
-    └── header/          # Example: Header widget
-        └── ui/          # Header component
+└── widgets/                 # UI blocks composed of multiple features/entities
+    ├── header/
+    └── footer/
 ```
 
-### Import Rules (Dependencies)
+---
+
+## 🔗 Import Layer Rules (FSD)
 
 ```
 app → widgets → features → entities → shared
 ```
 
-**Important:** Each layer can only import from lower layers!
+### ✔️ Allowed
+- `features/auth` → `entities/user`
+- `widgets/header` → `features/auth`
+- `app/page.tsx` → `widgets/header`
 
-✅ **Allowed:**
+### ❌ Forbidden
+- `shared` → `entities`
+- `entities` → `features`
+- `features` → `widgets`
 
-- `features/auth` → `entities/user` ✅
-- `widgets/header` → `features/auth` ✅
-- `app/page` → `widgets/header` ✅
+---
 
-❌ **Forbidden:**
+## 🧠 Layer Responsibilities
 
-- `shared` → `entities` ❌
-- `entities` → `features` ❌
-- `features` → `widgets` ❌
+### `shared/` — Foundation Layer
+Contains reusable code with **no business logic**.
 
-## What Goes Where?
+Use it for:
 
-### `shared/` — Shared Modules
+- Utilities (`tokenStorage`, `errorMessages`)
+- API client wrapper (`apiClient`)
+- Providers (`QueryProvider`, `ThemeRegistry`)
+- Zustand stores (`useAuthStore`, `useUiStore`)
+- Shared UI parts (`Toaster`)
+- Global constants
 
-**What goes here:**
+> This layer must not depend on any entities, features, or widgets.
 
-- Utilities and helpers (`formatDate`, `validateEmail`)
-- Common UI components (`Button`, `Input`, `Modal`)
-- Configuration (`store`, `providers`, `constants`)
-- Base API configuration (`baseApi`)
-- Common types
+---
 
-**Example:**
+### `entities/` — Business entities
 
-```
-shared/
-├── lib/
-│   ├── formatDate.ts
-│   └── validateEmail.ts
-├── ui/
-│   ├── Button.tsx
-│   └── Input.tsx
-└── api/
-    └── baseApi.ts
-```
+Each entity represents a domain model (Teacher, User, Subject).
 
-### `entities/` — Business Entities
+Contains:
 
-**What goes here:**
+- Types/models
+- Small UI components (cards, lists)
+- Future: entity-level mapping or formatting helpers
 
-- Business entities of the project (`User`, `Product`, `Order`, `Subject`)
-- Data models, types
-- API endpoints for a specific entity
-- Entity UI components (cards, lists)
+Use when multiple features rely on the same domain object.
 
-**Example:**
+---
 
-```
-entities/
-└── user/
-    ├── model/
-    │   └── types.ts          # interface User { id, name, email }
-    ├── api/
-    │   └── userApi.ts        # getUser, updateUser
-    └── ui/
-        ├── UserCard.tsx
-        └── UserAvatar.tsx
-```
+### `features/` — Functional modules
 
-**When to create an entity:**
+Each feature contains:
 
-- When there's a business entity with its own data
-- When entity logic isolation is needed
-- When the entity is used in multiple places
+- API actions and React Query requests  
+- Business logic hooks  
+- Validation  
+- Feature-specific UI (forms, modals)
 
-### `features/` — Features
-
-**What goes here:**
-
-- Specific application functions (`auth`, `profile`, `cart`, `search`)
-- Redux slices for the feature
-- API endpoints for the feature
-- Feature UI components (forms, modals)
-
-**Example:**
+Example: `auth`:
 
 ```
-features/
-└── auth/
-    ├── model/
-    │   └── authSlice.ts      # Redux slice for auth
-    ├── api/
-    │   └── authApi.ts        # login, register, logout
-    └── ui/
-        ├── LoginForm.tsx
-        └── RegisterForm.tsx
+features/auth/
+├── api/        # loginAction, logoutAction, meQuery
+├── model/      # useLogin, useSignup, useLogout, useMe
+├── ui/         # LoginForm, SignUpForm, AuthFormLayout
+└── lib/        # validation helpers
 ```
 
-**When to create a feature:**
+---
 
-- When there's a specific functionality (authentication, search, filtering)
-- When own business logic is needed
-- When a feature can use multiple entities
+### `widgets/` — UI Blocks
 
-### `widgets/` — Complex UI Components
+Structure:
 
-**What goes here:**
+- Combine features + entities
+- Used on multiple pages (Header, Footer, Dashboard sections)
 
-- Complex composite components
-- Components that combine multiple features/entities
-- Page blocks (Header, Footer, Sidebar)
+Example: `Header` may include:
 
-**Example:**
+- User info
+- Auth navigation
+- UI store state (sidebar toggle)
 
-```
-widgets/
-└── header/
-    └── ui/
-        └── Header.tsx        # Uses features/auth, entities/user
-```
+---
 
-**When to create a widget:**
+### `app/` — Routing Layer (Next.js App Router)
 
-- When a component combines multiple features
-- When it's a complex UI block (Header, Footer, Dashboard)
-- When the component is used on different pages
+Contains:
 
-### `app/` — Pages (Next.js App Router)
+- Pages (`page.tsx`)
+- Layouts
+- Server/Client components
+- Metadata
+- Route segments
 
-**What goes here:**
+This layer orchestrates which widgets/features/entities are visible.
 
-- Application pages (`page.tsx`)
-- Layouts (`layout.tsx`)
-- Route handlers
+---
 
-**Example:**
+## 🔌 API Layer (shared/api)
 
-```
-app/
-├── page.tsx                  # Home page
-├── layout.tsx                # Root layout
-└── profile/
-    └── page.tsx              # Profile page
+The project uses a clean fetch wrapper:
+
+```ts
+apiClient.get('/auth/me');
+apiClient.post('/auth/login', body);
 ```
 
-## Practical Examples
+- Automatically attaches `credentials: "include"`
+- Handles JSON parsing
+- Throws normalized errors with `status` and `data`
 
-### Example 1: Creating a User Entity
+---
 
-```typescript
-// entities/user/model/types.ts
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+## 🔒 Authentication Architecture
 
-// entities/user/api/userApi.ts
-import { baseApi } from "@/shared/api/baseApi";
+### Current (temporary):
+- Access token stored in `localStorage`
+- Refresh token returned by backend in future (HTTP-only cookie)
+- Zustand manages:
+  - `user`
+  - `isAuthenticated`
+  - `loading`
 
-export const userApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
-    getUser: builder.query<User, string>({
-      query: (id) => `/users/${id}`,
-    }),
-  }),
-});
+### Near-future (final goal):
+- Access tokens NOT stored on client
+- Refresh tokens via secure cookies
+- SSR compatibility with Next.js
 
-// entities/user/ui/UserCard.tsx
-export function UserCard({ user }: { user: User }) {
-  return <div>{user.name}</div>;
-}
-```
+The whole architecture is already prepared for switching to cookie-based auth.
 
-### Example 2: Creating an Auth Feature
+---
 
-```typescript
-// features/auth/api/authApi.ts
-import { baseApi } from "@/shared/api/baseApi";
-import type { User } from "@/entities/user/model/types";
+## 🚀 Installation
 
-export const authApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
-    login: builder.mutation<User, { email: string; password: string }>({
-      query: (body) => ({
-        url: "/auth/login",
-        method: "POST",
-        body,
-      }),
-    }),
-  }),
-});
-
-// features/auth/ui/LoginForm.tsx
-("use client");
-import { useLoginMutation } from "../api/authApi";
-
-export function LoginForm() {
-  const [login, { isLoading }] = useLoginMutation();
-  // ...
-}
-```
-
-### Example 3: Creating a Header Widget
-
-```typescript
-// widgets/header/ui/Header.tsx
-"use client";
-import { UserCard } from "@/entities/user/ui/UserCard";
-import { LoginForm } from "@/features/auth/ui/LoginForm";
-
-export function Header() {
-  return (
-    <header>
-      <UserCard />
-      <LoginForm />
-    </header>
-  );
-}
-```
-
-## Installation
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone git@github.com:new-organization-name/new-project-name-frontend.git
 cd new-project-name-frontend
 ```
 
-### 2. Install Dependencies
+### 2. Install dependencies
 
 ```bash
 yarn install
 ```
 
-### 3. Configure Environment Variables
-
-Create a `.env.local` file:
+### 3. Create `.env.local`
 
 ```env
 NEXT_PUBLIC_API_URL=https://api.example.com
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-### 4. Run the Development Server
+### 4. Start development server
 
 ```bash
 yarn dev
 ```
 
-### 5. Open in Browser
+### 5. Open app
 
-[http://localhost:3000](http://localhost:3000)
+```
+http://localhost:3000
+```
 
-## Available Commands
+---
 
-- `yarn dev` - Start development server
-- `yarn build` - Build for production
-- `yarn start` - Start production server
-- `yarn lint` - Run ESLint
+## 📦 Available Commands
+
+| Command         | Description                     |
+|-----------------|---------------------------------|
+| `yarn dev`      | Start dev server                |
+| `yarn build`    | Build production bundle         |
+| `yarn start`    | Run production server           |
+| `yarn lint`     | Run ESLint checks               |
+

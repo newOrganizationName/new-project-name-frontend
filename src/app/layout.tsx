@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { CssVarsProvider } from "@mui/joy/styles";
-import { Box, CssBaseline } from "@mui/joy";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import StoreProvider from "@/shared/config/StoreProvider";
+import { Box } from "@mui/joy";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
+import { QueryProvider, AuthSessionInitializer, ThemeRegistry } from "@/shared/providers";
+import { Toaster } from "@/shared/ui";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -69,33 +69,35 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable}`}
         suppressHydrationWarning
       >
-        <StoreProvider>
-          <CssVarsProvider>
-            <CssBaseline />
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "100vh",
-                backgroundColor: "transparent",
-                background:
-                  "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 100%)",
-              }}
-            >
-              <Header />
+        <QueryProvider>
+          <AuthSessionInitializer>
+            <ThemeRegistry>
               <Box
-                component="main"
                 sx={{
-                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  minHeight: "100vh",
                   backgroundColor: "transparent",
+                  background:
+                    "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 100%)",
                 }}
               >
-                {children}
+                <Header />
+                <Box
+                  component="main"
+                  sx={{
+                    flex: 1,
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  {children}
+                </Box>
+                <Footer />
               </Box>
-              <Footer />
-            </Box>
-          </CssVarsProvider>
-        </StoreProvider>
+              <Toaster />
+            </ThemeRegistry>
+          </AuthSessionInitializer>
+        </QueryProvider>
       </body>
     </html>
   );
