@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { CssVarsProvider } from "@mui/joy/styles";
-import { Box, CssBaseline } from "@mui/joy";
+import { Box } from "@mui/joy";
 import { Header } from "@/widgets/header";
 import { Footer } from "@/widgets/footer";
-import { QueryProvider } from "@/shared/providers";
+import { QueryProvider, AuthSessionInitializer, ThemeRegistry } from "@/shared/providers";
+import { Toaster } from "@/shared/ui";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,31 +70,33 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <QueryProvider>
-          <CssVarsProvider>
-            <CssBaseline />
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "100vh",
-                backgroundColor: "transparent",
-                background:
-                  "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 100%)",
-              }}
-            >
-              <Header />
+          <AuthSessionInitializer>
+            <ThemeRegistry>
               <Box
-                component="main"
                 sx={{
-                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  minHeight: "100vh",
                   backgroundColor: "transparent",
+                  background:
+                    "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 100%)",
                 }}
               >
-                {children}
+                <Header />
+                <Box
+                  component="main"
+                  sx={{
+                    flex: 1,
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  {children}
+                </Box>
+                <Footer />
               </Box>
-              <Footer />
-            </Box>
-          </CssVarsProvider>
+              <Toaster />
+            </ThemeRegistry>
+          </AuthSessionInitializer>
         </QueryProvider>
       </body>
     </html>

@@ -1,3 +1,6 @@
+import { getErrorMessage } from "@/shared/lib/errorMessages";
+import { tokenStorage } from "@/shared/lib/tokenStorage";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 interface ApiError extends Error {
@@ -5,27 +8,51 @@ interface ApiError extends Error {
   data?: unknown;
 }
 
+/**
+ * TODO: Temporary solution! Getting accessToken from localStorage.
+ * This should be replaced with httpOnly cookies on the backend for better security.
+ */
+function getAuthHeaders(): Record<string, string> {
+  const accessToken = tokenStorage.getAccessToken();
+  if (accessToken) {
+    return { Authorization: `Bearer ${accessToken}` };
+  }
+  return {};
+}
+
 export async function api<T>(
   url: string,
   options?: RequestInit
 ): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${url}`, {
-    ...options,
-    credentials: "include", // Enable cookies
-    headers: {
-      "Content-Type": "application/json",
-      ...(options?.headers || {}),
-    },
-  });
+  let res: Response;
+  
+  try {
+    res = await fetch(`${API_BASE_URL}${url}`, {
+      ...options,
+      credentials: "include", // Enable cookies
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+        ...(options?.headers || {}),
+      },
+    });
+  } catch (networkError) {
+    const error = new Error(getErrorMessage(networkError)) as ApiError;
+    error.status = 0;
+    throw error;
+  }
 
   if (!res.ok) {
-    const error = new Error(`API error: ${res.status}`) as ApiError;
-    error.status = res.status;
+    let errorData: unknown;
     try {
-      error.data = await res.json();
+      errorData = await res.json();
     } catch {
       // Response is not JSON
     }
+    
+    const error = new Error(getErrorMessage(errorData)) as ApiError;
+    error.status = res.status;
+    error.data = errorData;
     throw error;
   }
 
@@ -38,7 +65,6 @@ export async function api<T>(
   return JSON.parse(text);
 }
 
-// Convenience methods
 export const apiClient = {
   get: <T>(url: string, options?: RequestInit) =>
     api<T>(url, { ...options, method: "GET" }),
